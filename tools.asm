@@ -140,11 +140,8 @@ myINTHandler_d1h PROC
     pop rcx
     pop rbx
     pop rax
-    ; Here's a trick: kernel's original_D1_handler may unaccessible with user's GS
-    push [original_D1_handler]
-    add rsp, 8 ; restore stack height
     swapgs ; swap back to user gs
-    jmp qword ptr [rsp - 8] ; jmp to original_D1_handler
+    jmp [original_D1_handler]
     to_ker:
     pop rax
     jmp [original_D1_handler]
