@@ -145,7 +145,7 @@ myINTHandler_d1h PROC
     to_ker:
     pop rax
     jmp [original_D1_handler]
-myINTHandler_0dh ENDP
+myINTHandler_d1h ENDP
 
 
 END
