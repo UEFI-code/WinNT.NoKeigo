@@ -1,3 +1,6 @@
+del *.obj
+del *.sys
+
 set "KIT=C:\Program Files (x86)\Windows Kits\10"
 set "WDKVER=10.0.26100.0"
 set "INC=%KIT%\Include\%WDKVER%"
