@@ -1,0 +1,151 @@
+extern MmGetPhysicalAddress: proc
+extern MmMapIoSpace: proc
+extern DbgPrint: proc
+extern original_D1_handler: qword
+extern myD1Handler_cfunc: proc
+
+.code
+
+Disable_WriteProtect PROC
+    mov rax, cr0
+    and rax, 0FFFEFFFFh
+    mov cr0, rax
+    ret
+Disable_WriteProtect ENDP
+
+Disable_SMAP_SMEP PROC
+    mov rax, cr4
+    and rax, 0FFCFFFFFh
+    mov cr4, rax
+    ret
+Disable_SMAP_SMEP ENDP
+
+GetIDT PROC  
+    sidt fword ptr [rax]
+    ret
+GetIDT ENDP
+
+GetIDT_Item_Addr PROC
+    sub rsp, 10; Prepare stack for sidt
+    sidt fword ptr [rsp]
+    mov rbx, [rsp + 2] ; IDT base address
+    add rsp, 10; Restore stack
+    lea rcx, [rcx * 4]
+    lea rcx, [rcx * 4] ; Here multiple 16 is not allowed by x64
+    lea rcx, [rbx + rcx] ; Get target entry. RBX is useless now
+    xor rax, rax; Clean Ret Value
+    mov ax, [rcx]; // read low 16 bits from IDT item
+    xor rbx, rbx ; Clear RBX
+    mov ebx, [rcx + 6]; // read middle 32 bits from IDT item
+    shl rbx, 16; // shift RBX left 16 bits
+    or rax, rbx; // merge to RAX
+    xor rbx, rbx ; Clear RBX
+    mov bx, [rcx + 10]; // read high 16 bits from IDT item
+    shl rbx, 48; // shift RBX left 48 bits
+    or rax, rbx; // merge to RAX
+    ret
+GetIDT_Item_Addr ENDP
+
+SetIDT PROC  
+    lidt fword ptr [rax]
+    ret
+SetIDT ENDP
+
+HackIDT_FireAndForget2 PROC
+    ; int 03h ; Debug Break
+    ; incoming parameters: INT number, pointer to the function
+    push rcx ; Backup INT number
+    push rdx ; Backup pointer to the function
+
+    ; now, save IDTR into stack, 10 bytes
+    sub rsp, 10
+    sidt fword ptr [rsp]
+    ; seams Windows set the limit to 0x0FFF, so we just ignore it
+    add rsp, 2
+    pop rcx; Get the IDT pointer, then transfer to MmGetPhysicalAddress below ...
+
+    ; before we play next, let's prepare the safe stack (for stupid NT API)
+    push rbp
+    sub rsp, 0ffh; Fly away ...
+    lea rbp, [rsp + 0ffh]; ... to the safe place
+    
+    ; Bypass the memory protection. Hack CR0 also work!
+    call MmGetPhysicalAddress
+    mov rcx, rax
+    mov rdx, 256 * 16
+    xor r8, r8
+    call MmMapIoSpace
+
+    ; Now we may bypassed the memory protection
+    ; NT API is useless now, we can restore the stack height
+    add rsp, 0ffh; Dive back ...
+    pop rbp;
+    pop rdx
+    pop rcx
+    lea rcx, [rcx * 4]
+    lea rcx, [rcx * 4] ; Here multiple 16 is not allowed by x64.
+    lea rcx, [rax + rcx] ; Get the INT indexed pointer
+    mov [rcx], dx ; Store lower 16 bits of the pointer to the function
+    ; now shift rax to right 16 bits
+    shr rdx, 16
+    mov byte ptr [rcx + 2], 010h ; Select Ring0 Kernel Segment!
+    mov byte ptr [rcx + 5], 0EEh ; Allow user mode access
+    mov [rcx + 6], edx ; Store higher 32 bits of the pointer to the function
+    shr rdx, 32
+    mov [rcx + 10], dx ; Store higher 16 bits of the pointer to the function
+    ; OK, we finished the hack!
+    ret
+HackIDT_FireAndForget2 ENDP
+
+myINTHandler_d1h PROC
+    ; Stack Layout:
+    ; RSP + 0 : return address
+    ; RSP + 8 : original CS
+    ; RSP + 16 : original RFLAGS
+    ; RSP + 24 : original RSP
+    ; RSP + 32 : original SS
+    ; jmp [original_GP_addr]
+    ; Let's backup registers first...
+    push rax
+    ; Ok, chk if we are from kernel. if so, jmp original
+    mov rax, [rsp + 8*1]
+    cmp rax, 10h
+    je to_ker
+    ; oh...we are from user
+    push rbx
+    push rcx
+    push rdx
+    push rsi
+    push rdi
+    push r8
+    push r9
+    push r10
+    push r11
+    swapgs ; swap to kernel gs
+    mov rcx, rsp ; argv0
+    push rbp ; the fucking call convention...
+    mov rbp, rsp
+    sub rsp, 0ffh ; Prepare stack for myD1Handler_cfunc
+    call myD1Handler_cfunc
+    add rsp, 0ffh ; Restore stack
+    pop rbp
+    ; Restore registers
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    swapgs ; swap back to user gs
+    jmp [original_D1_handler]
+    to_ker:
+    pop rax
+    jmp [original_D1_handler]
+myINTHandler_0dh ENDP
+
+
+END
