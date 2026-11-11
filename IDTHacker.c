@@ -1,3 +1,5 @@
+#include <ntddk.h>
+
 UINT64 original_D1_addr = 0;
 
 UINT64 GetIDT_Item_Addr(UINT64 int_id); // asm toolget
