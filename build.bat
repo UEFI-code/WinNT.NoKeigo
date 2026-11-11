@@ -38,3 +38,9 @@ link.exe /nologo ^
     hal.lib ^
     BufferOverflowK.lib
 
+signtool sign ^
+    /f MyDriverTest.pfx ^
+    /p 123456 ^
+    /fd SHA256 ^
+    /v ^
+    Nt_NoKeigo.sys
