@@ -8,6 +8,16 @@ User application might CRASH or behave unexpectedly.
 
 Currently under PoC stage.
 
+## Prerequisites
+
+Disable KVA shadow because some kernel VA is inaccessible when timer-interrupts on ring3
+
+```
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v FeatureSettingsOverride /t REG_DWORD /d 3 /f
+
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v FeatureSettingsOverrideMask /t REG_DWORD /d 3 /f
+```
+
 ## DISCLAIMER
 
 This driver is for **educational, research and game-effect-design purposes only**.
