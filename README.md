@@ -43,6 +43,8 @@ sc create Nt_NoKeigo type= kernel binPath= "C:\Nt_NoKeigo.sys"
 sc start Nt_NoKeigo
 ```
 
+Note: Heavy CPU usage process is easier to be detected.
+
 3. Stop the service:
 
 ```
