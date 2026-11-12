@@ -1,6 +1,8 @@
 #include <ntddk.h>
 
+void Disable_WriteProtect();
 void Disable_SMAP_SMEP();
+
 void HackIDT();
 void RestoreIDT();
 
@@ -15,6 +17,8 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT driver_object, PUNICODE_STRING registry_path
 {
     driver_object->DriverUnload = DriverUnload;
     KdPrint(("Driver Loaded at RegistryPath: %wZ\n", registry_path));
+    Disable_WriteProtect();
+    KdPrint(("Write Protection Disabled\n"));
     Disable_SMAP_SMEP();
     KdPrint(("SMAP and SMEP Disabled\n"));
     HackIDT();

@@ -39,9 +39,53 @@ typedef struct {
     UINT64 SS;
 } MY_GP_FRAME;
 
+const char *keigo_pattern[] = {
+    "TestKeigo",
+    "\xe3\x81\x94\xe3\x81\x96\xe3\x81\x84\xe3\x81\xbe\xe3\x81\x99", // ございます utf8
+};
+#define KEIGO_PATTERN_COUNT (sizeof(keigo_pattern) / 8)
+
+#define SCAN_SIZE 128
+void NoKeigo_Patcher(UINT8 *addr)
+{
+    if (!MmIsAddressValid(addr))
+        return;
+    if (!MmIsAddressValid(addr + SCAN_SIZE))
+        return;
+    DbgPrint("Scanning keigo buf at 0x%p ...\n", addr);
+    for (UINT8 *p = addr; p < addr + SCAN_SIZE; p++)
+    {
+        for (int i = 0; i < KEIGO_PATTERN_COUNT; i++)
+        {
+            const char *pattern = keigo_pattern[i];
+            size_t pattern_len = strlen(pattern);
+            if (memcmp(p, pattern, pattern_len) == 0)
+            {
+                DbgPrint("Found keigo pattern at 0x%p: %s\n", p, pattern);
+                memcpy(p, "NO KEIGO, US IS BEST", pattern_len);
+            }
+        }
+    }
+}
+
+static UINT64 counter = 0;
 void myD1Handler_cfunc(MY_GP_FRAME *frame)
 {
-    DbgBreakPoint();
-    DbgPrint("We are in myD1Handler_cfunc, arg = %p\n", frame);
-    DbgPrint("Usr RIP = %p\n", frame->RIP);
+    counter = (counter + 1) % 256;
+    if (counter % 256 != 1)
+        return;
+    //DbgBreakPoint();
+    //DbgPrint("Mem patch triggered\n");
+    NoKeigo_Patcher(frame->RAX);
+    NoKeigo_Patcher(frame->RBX);
+    NoKeigo_Patcher(frame->RCX);
+    NoKeigo_Patcher(frame->RDX);
+    NoKeigo_Patcher(frame->RDI);
+    NoKeigo_Patcher(frame->RSI);
+    NoKeigo_Patcher(frame->RDI);
+    NoKeigo_Patcher(frame->R8);
+    NoKeigo_Patcher(frame->R9);
+    NoKeigo_Patcher(frame->R10);
+    NoKeigo_Patcher(frame->R11);
+    NoKeigo_Patcher(frame->RSP);
 }
