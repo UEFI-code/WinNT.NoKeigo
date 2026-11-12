@@ -22,6 +22,14 @@ IRQL_NOT_LESS_OR_EQUAL
 mysterious silence
 ```
 
+(
+
+Actual testing revealed that the driver is far more stable than originally expected.
+
+Mostly because it has already survived enough **Double Faults and Triple Faults** to psychologically transcend the concept of uptime.
+
+)
+
 This is not anti-malware.
 This is not production software.
 This is not even emotionally stable software.
