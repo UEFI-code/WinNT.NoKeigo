@@ -51,7 +51,7 @@ SetIDT PROC
     ret
 SetIDT ENDP
 
-HackIDT_FireAndForget2 PROC
+HackIDT_FireAndForget3 PROC
     ; int 03h ; Debug Break
     ; incoming parameters: INT number, pointer to the function
     push rcx ; Backup INT number
@@ -66,8 +66,8 @@ HackIDT_FireAndForget2 PROC
 
     ; before we play next, let's prepare the safe stack (for stupid NT API)
     push rbp
+    mov rbp, rsp
     sub rsp, 0ffh; Fly away ...
-    lea rbp, [rsp + 0ffh]; ... to the safe place
     
     ; Bypass the memory protection. Hack CR0 also work!
     call MmGetPhysicalAddress
@@ -88,14 +88,12 @@ HackIDT_FireAndForget2 PROC
     mov [rcx], dx ; Store lower 16 bits of the pointer to the function
     ; now shift rax to right 16 bits
     shr rdx, 16
-    mov byte ptr [rcx + 2], 010h ; Select Ring0 Kernel Segment!
-    mov byte ptr [rcx + 5], 0EEh ; Allow user mode access
     mov [rcx + 6], edx ; Store higher 32 bits of the pointer to the function
     shr rdx, 32
     mov [rcx + 10], dx ; Store higher 16 bits of the pointer to the function
     ; OK, we finished the hack!
     ret
-HackIDT_FireAndForget2 ENDP
+HackIDT_FireAndForget3 ENDP
 
 myINTHandler_d1h PROC
     ; Stack Layout:

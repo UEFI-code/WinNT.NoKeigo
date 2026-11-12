@@ -3,7 +3,7 @@
 UINT64 original_D1_handler = 0;
 
 UINT64 GetIDT_Item_Addr(UINT64 int_id); // asm toolget
-void HackIDT_FireAndForget2(UINT64 int_id, void *func); // asm toolget
+void HackIDT_FireAndForget3(UINT64 int_id, void *func); // asm toolget
 
 void myINTHandler_d1h(); // defined in tools.asm
 
@@ -12,7 +12,7 @@ void HackIDT()
     // trigger breakpoint
     DbgBreakPoint();
     original_D1_handler = GetIDT_Item_Addr(0xd1);
-    HackIDT_FireAndForget2(0xd1, myINTHandler_d1h);
+    HackIDT_FireAndForget3(0xd1, myINTHandler_d1h);
 }
 
 typedef struct {
