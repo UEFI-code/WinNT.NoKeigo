@@ -18,6 +18,13 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v FeatureSettingsOverrideMask /t REG_DWORD /d 3 /f
 ```
 
+Remember: 
+
+- Play STUPID game, win STUPID prizes
+- Play NT game, win NT prizes
+- Play Intel game, win Intel prizes
+- Play AMD game, win AMD prizes
+
 ## DISCLAIMER
 
 This driver is for **educational, research and game-effect-design purposes only**.
