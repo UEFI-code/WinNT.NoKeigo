@@ -2,10 +2,12 @@
 
 void Disable_SMAP_SMEP();
 void HackIDT();
+void RestoreIDT();
 
 VOID DriverUnload(PDRIVER_OBJECT pDriverObject)
 {
     DbgPrint("Driver Unload Called\n");
+    RestoreIDT();
     pDriverObject->DriverUnload = NULL;
 }
 

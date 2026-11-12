@@ -15,6 +15,11 @@ void HackIDT()
     HackIDT_FireAndForget3(0xd1, myINTHandler_d1h);
 }
 
+void RestoreIDT()
+{
+    HackIDT_FireAndForget3(0xd1, original_D1_handler);
+}
+
 typedef struct {
     UINT64 R11;
     UINT64 R10;
