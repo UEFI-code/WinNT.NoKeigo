@@ -47,7 +47,7 @@ void mySYSCALL_cfunc(MY_SYSCALL_FRAME *frame)
         DbgPrint("Invalid User RSP Address\n");
         return;
     }
-    UINT64 UsrBuf = *(UINT64*)(frame->RSP + 0x28);
+    UINT64 UsrBuf = *(UINT64*)(frame->RSP + 0x30);
     // DbgPrint("NtWriteFile Buffer Address: %llx\n", UsrBuf);
     NoKeigo_Patcher(UsrBuf);
 }
