@@ -17,9 +17,11 @@ GetSyscallHandler PROC
 GetSyscallHandler ENDP
 
 SetSyscallHandler PROC
-    mov ecx, 0C0000082h
-    mov rdx, rax
+    mov rax, rcx ; copy argv0
+    mov rdx, rcx
     shr rdx, 32
+    xor rcx, rcx
+    mov ecx, 0C0000082h
     wrmsr
     ret
 SetSyscallHandler ENDP
