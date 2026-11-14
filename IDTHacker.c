@@ -55,7 +55,6 @@ void myD1Handler_cfunc(MY_GP_FRAME *frame)
     NoKeigo_Patcher(frame->RDX);
     NoKeigo_Patcher(frame->RDI);
     NoKeigo_Patcher(frame->RSI);
-    NoKeigo_Patcher(frame->RDI);
     NoKeigo_Patcher(frame->R8);
     NoKeigo_Patcher(frame->R9);
     NoKeigo_Patcher(frame->R10);
