@@ -20,6 +20,13 @@ cl.exe /nologo /c /kernel /GS /W4 /Zi /Od ^
     /I"%INC%\ucrt" ^
     IDTHacker.c /Fo:IDTHacker.obj
 
+cl.exe /nologo /c /kernel /GS /W4 /Zi /Od ^
+    /D_AMD64_ ^
+    /I"%INC%\km" ^
+    /I"%INC%\shared" ^
+    /I"%INC%\ucrt" ^
+    NoKeigoPatcher.c /Fo:NoKeigoPatcher.obj
+
 ml64.exe /nologo /c /Zi tools.asm /Fo:tools.obj
 
 link.exe /nologo ^
@@ -33,6 +40,7 @@ link.exe /nologo ^
     /LIBPATH:"%LIB%" ^
     main.obj ^
     IDTHacker.obj ^
+    NoKeigoPatcher.obj ^
     tools.obj ^
     ntoskrnl.lib ^
     hal.lib ^
