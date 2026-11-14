@@ -42,7 +42,7 @@ mySYSCALL_Handler PROC
     cmp ax, 8
     jne to_ker
     swapgs
-    int 3
+    ; int 3
     mov qword ptr [my_syscall_stack + 1016h], rsp
     lea rsp, [my_syscall_stack + 1016h]
     push rax
