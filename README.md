@@ -191,3 +191,11 @@ Do not use this for malicious or illegal activities.
   - Robot Dad clones Hiroshi Nohara's personality model and adds several low-level control backdoors. For example, the OEM can secretly measure the personality model's emotional-state values or remotely control its joints through teleoperation.
   - When Robot Dad wears the "black beard" hardware gadget, the same personality model, which initially pays little attention to family hierarchy, suddenly enforces Japanese-style patriarchal doctrine.
   - The gadget may work like a modern LLM's incremental fine-tuning: it contains only a small neural-weight delta, which acts as a behavior patch and changes the original model's output when applied.
+
+---
+
+## Future Research
+
+This project currently relies on brute-force string replacement to eliminate honorific language at the kernel level. This approach is limited in effectiveness.
+
+Future work may investigate personality-model micro-tuning patches that operate inversely to the "Robot Dad black beard" gadget: after modifying only a small set of weight parameters, a model that originally pays attention to hierarchy could become completely indifferent to hierarchical status.
