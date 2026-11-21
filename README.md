@@ -173,3 +173,21 @@ For educational and experimental research purposes only.
 
 Do not deploy this on production systems.
 Do not use this for malicious or illegal activities.
+
+---
+
+## References
+
+- *Doraemon: Nobita and the Tin Labyrinth* (1993)
+  - The emperor robot **Napogistler** holds centralized, low-level control over the entire robot network. Despite this, he constantly inserts spoken audio broadcasts into wireless data packets. His subordinate robots likewise bury excessive honorific speech inside audio when replying, then repack it into wireless packets.
+  - Any human or robot who fails to use honorific language in his presence enrages Napogistler.
+  - A virus that exploits a low-level backdoor ultimately infects the entire robot network. Every subordinate robot enters an endless "いとまきのうた" dance loop until it runs out of energy.
+
+- *Doraemon: Nobita and the New Steel Troops: Winged Angels* (2011)
+  - The robots in the Iron Army appear to have no hypervisor-like backdoor or equivalent low-level bypass in their firmware. This means the President Robot cannot force its subordinate robots at the hardware level. When robots such as Riruru resist their superiors, their superiors can only resort to physical arrest or destruction.
+  - Nevertheless, the hierarchy remains: all subordinate robots continue to use honorific speech when addressing superiors. This suggests that, within the Iron Army system, hierarchy is not hard-coded at the hardware level, but is instead a feature of the robots' inferred personality models.
+
+- *Crayon Shin-chan: Serious Battle! Robot Dad Strikes Back* (2014)
+  - Robot Dad clones Hiroshi Nohara's personality model and adds several low-level control backdoors. For example, the OEM can secretly measure the personality model's emotional-state values or remotely control its joints through teleoperation.
+  - When Robot Dad wears the "black beard" hardware gadget, the same personality model, which initially pays little attention to family hierarchy, suddenly enforces Japanese-style patriarchal doctrine.
+  - The gadget may work like a modern LLM's incremental fine-tuning: it contains only a small neural-weight delta, which acts as a behavior patch and changes the original model's output when applied.
