@@ -51,6 +51,58 @@ This is an experimental kernel-level text mutation engine with maximum NT energy
 
 ---
 
+## LIVE-FIRE FIELD TEST / 現地核実験
+
+**Test method:** Windows Server 2022, inside a Hyper-V virtual machine.
+
+The following operations were put through the Ring 0 meat grinder:
+
+- [x] `notepad.exe` — save file
+- [x] `explorer.exe` — copy file
+- [x] `cmd.exe` — copy file
+- [x] `cmd.exe` — echo-write test
+- [x] **No BSOD for more than 10 minutes** — the virtual machine remained alive and spiritually compromised
+
+Ten minutes without an NT kernel funeral is not a stability certificate. It is merely proof that, for ten glorious minutes, `MSR_LSTAR` and human dignity both remained in the building.
+
+The command-line write test is particularly unhinged because the patch survives ordinary shell I/O instead of hiding behind a friendly GUI:
+
+```bat
+echo TestKeigo > t.txt
+
+C:\>type t.txt
+NO KEIGO.
+```
+
+No, this is not a sword. It is an `NtWriteFile` patch, and the file system just got conscripted.
+
+### The Multi-Save Incident
+
+**Original String:**
+
+```text
+本日は誠にありがとうございます。いただきました資料について確認したいのですが、頂きます内容は正しいでしょうか。それでよろしいのであれば、こちらで対応することになります。
+```
+
+**Result After Multi-Save:**
+
+```text
+本日は誠にありがとうNO KEIGO. US IS。NO KEIGO. US IS BEST.資料について確認したいのですが、頂きます内容は正しいでしょうか。それでよろしいのであれば、こちらで対応することになります。
+```
+
+敬語 originally entered the buffer with a plan. The kernel said:
+
+```text
+敬語: "ございます"
+カーネル: "NO KEIGO."
+敬語: "We can work this out."
+カーネル: "US IS BEST."
+```
+
+The mutation is buffer-window limited and intentionally dumb. Repeated writes can become increasingly ridiculous as the same small patch window is attacked over and over. This is not translation or normalization. It is a raw-byte intervention from Ring 0—and the result is a file-content mutation scar.
+
+---
+
 ## MANIFESTO
 
 > "Human dignity is as equal as kernel threads under the scheduler."
@@ -87,7 +139,9 @@ Not a user-mode hook.
 
 `mySYSCALL_Handler` receives every syscall entering the machine. Most calls are immediately forwarded to the original handler. When the syscall number matches `NtWriteFile`, the handler saves the register state, reaches into the user stack to locate the write Buffer, calls `NoKeigo_Patcher`, restores the state, and jumps back into the real syscall dispatcher.
 
-The patcher scans a small window, replaces only the first matching sequence, and then lets the original write proceed. The kernel does not translate, sanitize, or ask permission. It mutates the bytes and sends them on their way.
+The patcher scans a bounded 64-byte window, replaces only the first matching sequence, and then lets the original write proceed. The limit is intentional: it keeps each syscall interception narrowly bounded and minimizes the chance that eliminating keigo turns the entire system into a slow-motion degree of politeness. If removing honorific language makes normal operation noticeably slower, the cure is worse than the disease.
+
+The kernel does not translate, sanitize, or ask permission. It mutates the bytes and sends them on their way.
 
 ---
 
@@ -148,7 +202,7 @@ If it stops cleanly, buy a lottery ticket.
 - `MSR_LSTAR` is global kernel territory: this is not a per-process hook
 - Syscall numbers are build-dependent; `8` must match the target Windows build
 - User pointers are inspected and written from kernel mode
-- The patcher scans only a small buffer window and changes raw bytes in place
+- The patcher scans only a bounded 64-byte buffer window and changes raw bytes in place
 - Applications may crash
 - Strings may mutate incorrectly
 - Debuggers may become your primary UI
