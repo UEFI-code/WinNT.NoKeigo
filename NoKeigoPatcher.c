@@ -13,7 +13,7 @@ const char *keigo_pattern[] = {
 };
 #define KEIGO_PATTERN_COUNT (sizeof(keigo_pattern) / 8)
 
-#define SCAN_SIZE 32
+#define SCAN_SIZE 64
 void NoKeigo_Patcher(UINT8 *addr)
 {
     if (!MmIsAddressValid(addr))
